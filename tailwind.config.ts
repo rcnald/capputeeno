@@ -16,6 +16,20 @@ const config: Config = {
       fontSize: {
         '4.25xl': '2.5rem',
       },
+      keyframes: {
+        fadeIn: {
+          '0%': { transform: 'scale(.95)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        fadeOut: {
+          '0%': { transform: 'scale(1)', opacity: '1' },
+          '100%': { transform: 'scale(.95)', opacity: '0' },
+        },
+      },
+      animation: {
+        fadeIn: 'fadeIn .1s ease-in forwards',
+        fadeOut: 'fadeOut .1s ease-out forwards',
+      },
     },
   },
   plugins: [],

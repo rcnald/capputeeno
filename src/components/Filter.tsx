@@ -1,5 +1,8 @@
+'use client'
+
 import { Chevron } from '@/utils/Icons/Chevron'
-import { ComponentProps } from 'react'
+import { ComponentProps, useState } from 'react'
+import { setTimeout } from 'timers'
 
 interface OptionsProps extends ComponentProps<'li'> {
   children: string
@@ -11,22 +14,40 @@ interface FiltersDataProps {
 }
 
 export default function Filter() {
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+
+  const handleClick = (trigger: HTMLButtonElement) => {
+    if (isOpen) {
+      trigger.setAttribute('data-closing', '')
+      setTimeout(() => {
+        setIsOpen(false)
+        trigger.removeAttribute('data-closing')
+      }, 100)
+    } else {
+      setIsOpen(true)
+    }
+  }
+
   return (
-    <div className="">
+    <div className="relative flex h-fit w-full max-w-52 flex-col items-end gap-1">
       <button
         id="orderProductsBy"
         aria-haspopup="true"
-        aria-expanded="false"
-        className="group flex text-zinc-400 hover:text-zinc-700"
+        aria-expanded={isOpen}
+        onClick={(e) => handleClick(e.currentTarget)}
+        className="group peer flex text-zinc-400 aria-expanded:text-zinc-700 "
       >
         Organizar por
         <Chevron
           size="24px"
-          className="stroke-zinc-400 group-hover:stroke-zinc-700"
+          className="stroke-zinc-400 group-aria-expanded:stroke-zinc-700"
         />
       </button>
 
-      <ul aria-labelledby="orderProductsBy" className="rounded bg-white">
+      <ul
+        aria-labelledby="orderProductsBy"
+        className="absolute top-[calc(100%+0.25rem)] hidden flex-col gap-1 rounded bg-white p-4 opacity-0 peer-aria-expanded:flex peer-aria-expanded:animate-fadeIn peer-data-[closing]:animate-fadeOut"
+      >
         {filters.map((filter) => {
           return (
             <Options key={filter.id} id={filter.id}>
@@ -41,8 +62,8 @@ export default function Filter() {
 
 function Options({ children, ...props }: OptionsProps) {
   return (
-    <li {...props}>
-      <button>{children}</button>
+    <li {...props} className="text-zinc-400 ">
+      <button className="hover:text-zinc-700">{children}</button>
     </li>
   )
 }
