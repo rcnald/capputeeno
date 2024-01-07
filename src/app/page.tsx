@@ -3,9 +3,11 @@ import Sections from '@/components/Sections'
 
 export default function Page() {
   return (
-    <div className="flex min-h-screen justify-between bg-zinc-300 p-7">
-      <Sections />
-      <Filter />
+    <div className="min-h-screen bg-zinc-300 p-7">
+      <div className="flex justify-between">
+        <Sections />
+        <Filter />
+      </div>
     </div>
   )
 }

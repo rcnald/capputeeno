@@ -2,7 +2,7 @@
 
 import useQueryParam from '@/hooks/useQueryParam'
 import { Icons } from '@/utils/Icons'
-import { ComponentProps, useState } from 'react'
+import { ComponentProps, useRef, useState } from 'react'
 import { setTimeout } from 'timers'
 
 interface OptionProps extends ComponentProps<'li'> {
@@ -19,27 +19,28 @@ interface FiltersDataProps {
 export default function Filter() {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [getSearchParams, setSearchParams] = useQueryParam()
+  const ref = useRef<HTMLButtonElement>(null)
   const filterParam = getSearchParams('filter', 'news')
 
-  const handleClick = (filterButton: HTMLButtonElement) => {
-    if (isOpen) {
+  function closeFilter() {
+    const filterButton = ref.current
+    if (filterButton) {
       filterButton.setAttribute('data-closing', '')
       setTimeout(() => {
         setIsOpen(false)
         filterButton.removeAttribute('data-closing')
       }, 100)
-    } else {
-      setIsOpen(true)
     }
   }
 
   return (
     <div className="relative flex h-fit w-fit flex-col items-end gap-1 ">
       <button
+        ref={ref}
         id="orderProductsBy"
         aria-haspopup="true"
         aria-expanded={isOpen}
-        onClick={(e) => handleClick(e.currentTarget)}
+        onClick={() => (isOpen ? closeFilter() : setIsOpen(true))}
         className="group peer z-10 flex items-center text-zinc-400 transition-all before:inset-0 before:-z-10 before:cursor-default before:content-normal before:bg-transparent aria-expanded:text-zinc-700 aria-expanded:before:fixed"
       >
         Organizar por:&nbsp;
@@ -60,7 +61,10 @@ export default function Filter() {
           const isSelected = filterParam === filter.id
           return (
             <Option
-              onSelected={() => setSearchParams('filter', filter.id)}
+              onSelected={() => {
+                setSearchParams('filter', filter.id)
+                closeFilter()
+              }}
               selected={isSelected}
               key={filter.id}
               id={filter.id}
