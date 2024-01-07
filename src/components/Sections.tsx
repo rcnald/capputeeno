@@ -1,6 +1,7 @@
 'use client'
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import useQueryParam from '@/hooks/useQueryParam'
+
 import { ComponentProps, useLayoutEffect, useRef } from 'react'
 
 interface SectionProps extends ComponentProps<'li'> {
@@ -15,16 +16,9 @@ interface SectionData {
 }
 
 export default function Sections() {
-  const searchParams = useSearchParams()
-  const pathname = usePathname()
-  const { replace } = useRouter()
+  const [getSearchParams, setSearchParams] = useQueryParam()
   const ref = useRef<HTMLDivElement>(null)
-
-  function handleSelected(category: string) {
-    const params = new URLSearchParams(searchParams)
-    category ? params.set('category', category) : params.delete('category')
-    replace(`${pathname}?${params.toString()}`)
-  }
+  const categoryParam = getSearchParams('category', 'all')
 
   function syncSelector(category: string) {
     const item = document.getElementById(category)
@@ -32,30 +26,29 @@ export default function Sections() {
 
     if (ref.current && item && parent) {
       const parentRect = parent.getBoundingClientRect()
-      const { width = 0, left = 0 } = item.getBoundingClientRect()
+      const itemRect = item.getBoundingClientRect()
 
-      const widthPercentage = (width / parentRect.width) * 100
-      const leftPercentage = ((left - parentRect.left) / parentRect.width) * 100
+      const width = (itemRect.width / parentRect.width) * 100
+      const left = ((itemRect.left - parentRect.left) / parentRect.width) * 100
 
-      ref.current.style.width = `${widthPercentage}%`
-      ref.current.style.left = `${leftPercentage}%`
+      ref.current.style.width = `${width}%`
+      ref.current.style.left = `${left}%`
     }
   }
 
   useLayoutEffect(() => {
-    syncSelector(searchParams.get('category') ?? 'all')
-  }, [searchParams])
+    syncSelector(categoryParam)
+  }, [categoryParam])
 
   return (
     <nav className=" relative flex size-fit list-none gap-4 text-base font-normal text-zinc-400">
       {sections.map((section) => {
-        const isSelected =
-          (searchParams.get('category') ?? 'all') === section.category
+        const isSelected = categoryParam === section.category
 
         return (
           <Section
             onSelected={() => {
-              handleSelected(section.category)
+              setSearchParams('category', section.category)
             }}
             selected={isSelected}
             id={section.category}
@@ -68,7 +61,7 @@ export default function Sections() {
 
       <div
         ref={ref}
-        className="absolute top-full h-1 w-full bg-orange-400 transition-all duration-300"
+        className="absolute top-full h-1 w-0 bg-orange-400 transition-all duration-300"
       ></div>
     </nav>
   )

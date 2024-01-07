@@ -1,11 +1,14 @@
 'use client'
 
-import { Chevron } from '@/utils/Icons/Chevron'
+import useQueryParam from '@/hooks/useQueryParam'
+import { Icons } from '@/utils/Icons'
 import { ComponentProps, useState } from 'react'
 import { setTimeout } from 'timers'
 
-interface OptionsProps extends ComponentProps<'li'> {
+interface OptionProps extends ComponentProps<'li'> {
   children: string
+  onSelected: () => void
+  selected: boolean
 }
 
 interface FiltersDataProps {
@@ -15,13 +18,15 @@ interface FiltersDataProps {
 
 export default function Filter() {
   const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [getSearchParams, setSearchParams] = useQueryParam()
+  const filterParam = getSearchParams('filter', 'news')
 
-  const handleClick = (trigger: HTMLButtonElement) => {
+  const handleClick = (filterButton: HTMLButtonElement) => {
     if (isOpen) {
-      trigger.setAttribute('data-closing', '')
+      filterButton.setAttribute('data-closing', '')
       setTimeout(() => {
         setIsOpen(false)
-        trigger.removeAttribute('data-closing')
+        filterButton.removeAttribute('data-closing')
       }, 100)
     } else {
       setIsOpen(true)
@@ -29,16 +34,19 @@ export default function Filter() {
   }
 
   return (
-    <div className="relative flex h-fit w-full max-w-52 flex-col items-end gap-1">
+    <div className="relative flex h-fit w-fit flex-col items-end gap-1 ">
       <button
         id="orderProductsBy"
         aria-haspopup="true"
         aria-expanded={isOpen}
         onClick={(e) => handleClick(e.currentTarget)}
-        className="group peer flex text-zinc-400 aria-expanded:text-zinc-700 "
+        className="group peer z-10 flex items-center text-zinc-400 transition-all before:inset-0 before:-z-10 before:cursor-default before:content-normal before:bg-transparent aria-expanded:text-zinc-700 aria-expanded:before:fixed"
       >
-        Organizar por
-        <Chevron
+        Organizar por:&nbsp;
+        {filters.map((filter) => {
+          return filter.id === filterParam ? filter.name : null
+        })}
+        <Icons.Chevron
           size="24px"
           className="stroke-zinc-400 group-aria-expanded:stroke-zinc-700"
         />
@@ -46,13 +54,19 @@ export default function Filter() {
 
       <ul
         aria-labelledby="orderProductsBy"
-        className="absolute top-[calc(100%+0.25rem)] hidden flex-col gap-1 rounded bg-white p-4 opacity-0 peer-aria-expanded:flex peer-aria-expanded:animate-fadeIn peer-data-[closing]:animate-fadeOut"
+        className="pointer-events-auto absolute top-[calc(100%+0.25rem)] z-10 hidden flex-col gap-1 rounded bg-white p-4 opacity-0 peer-aria-expanded:flex peer-aria-expanded:animate-fadeIn peer-data-[closing]:animate-fadeOut"
       >
         {filters.map((filter) => {
+          const isSelected = filterParam === filter.id
           return (
-            <Options key={filter.id} id={filter.id}>
+            <Option
+              onSelected={() => setSearchParams('filter', filter.id)}
+              selected={isSelected}
+              key={filter.id}
+              id={filter.id}
+            >
               {filter.name}
-            </Options>
+            </Option>
           )
         })}
       </ul>
@@ -60,10 +74,14 @@ export default function Filter() {
   )
 }
 
-function Options({ children, ...props }: OptionsProps) {
+function Option({ children, onSelected, selected, ...props }: OptionProps) {
   return (
-    <li {...props} className="text-zinc-400 ">
-      <button className="hover:text-zinc-700">{children}</button>
+    <li
+      {...props}
+      data-selected={selected}
+      className="w-fit text-zinc-400 transition-all hover:text-zinc-700 data-[selected=true]:text-zinc-700"
+    >
+      <button onClick={onSelected}>{children}</button>
     </li>
   )
 }
@@ -72,5 +90,5 @@ const filters: Array<FiltersDataProps> = [
   { name: 'Novidades', id: 'news' },
   { name: 'Preço: Maior - menor', id: 'price-to-low' },
   { name: 'Preço: Menor - maior', id: 'price-to-high' },
-  { name: 'Mais vendidos', id: 'best-sellers' },
+  { name: 'Mais vendidos', id: 'popular' },
 ]
