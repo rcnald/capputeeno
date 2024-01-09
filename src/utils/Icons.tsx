@@ -1,4 +1,3 @@
-import { ElementType } from 'react'
 import { Bag } from './Icons/Bag'
 import { Chevron } from './Icons/Chevron'
 import { Magnifying } from './Icons/Magnifying'
@@ -9,7 +8,7 @@ export type IconProps = {
 }
 
 type IconType = {
-  [key: string]: ElementType
+  [key: string]: (props: IconProps) => JSX.Element
 }
 
 export const Icons: IconType = {

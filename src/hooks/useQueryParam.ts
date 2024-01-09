@@ -2,8 +2,13 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 type getQueryParams = (query: string, defaultValue?: string) => string
 type setQueryParams = (query: string, value: string) => void
+type createQueryParams = (query: string, value: string | number) => string
 
-type useQueryParamParams = () => [getQueryParams, setQueryParams]
+type useQueryParamParams = () => {
+  getQuery: getQueryParams
+  setQuery: setQueryParams
+  createQuery: createQueryParams
+}
 
 const useQueryParam: useQueryParamParams = () => {
   const searchParams = useSearchParams()
@@ -20,7 +25,15 @@ const useQueryParam: useQueryParamParams = () => {
     return searchParams.get(query) ?? defaultValue
   }
 
-  return [getQuery, setQuery]
+  const createQuery: createQueryParams = (query, _value) => {
+    let value = ''
+    if (typeof _value === 'number') value = _value.toString()
+    const params = new URLSearchParams(searchParams)
+    query ? params.set(query, value) : params.delete(query)
+    return `${pathname}?${params.toString()}`
+  }
+
+  return { getQuery, setQuery, createQuery }
 }
 
 export default useQueryParam

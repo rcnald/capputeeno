@@ -2,8 +2,12 @@
 
 import useQueryParam from '@/hooks/useQueryParam'
 import { Icons } from '@/utils/Icons'
-import { ComponentProps, useRef, useState } from 'react'
-import { setTimeout } from 'timers'
+import cn from '@/utils/cn'
+import { ComponentProps, ElementRef, useRef, useState } from 'react'
+
+interface FilterProps extends ComponentProps<'div'> {
+  className?: string
+}
 
 interface OptionProps extends ComponentProps<'li'> {
   children: string
@@ -16,14 +20,14 @@ interface FiltersDataProps {
   id: string
 }
 
-export default function Filter() {
+export default function Filter({ className }: FilterProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [getSearchParams, setSearchParams] = useQueryParam()
-  const ref = useRef<HTMLButtonElement>(null)
-  const filterParam = getSearchParams('filter', 'news')
+  const { getQuery, setQuery } = useQueryParam()
+  const buttonRef = useRef<ElementRef<'button'>>(null)
+  const filterParam = getQuery('filter', 'news')
 
   function closeFilter() {
-    const filterButton = ref.current
+    const filterButton = buttonRef.current
     if (filterButton) {
       filterButton.setAttribute('data-closing', '')
       setTimeout(() => {
@@ -34,9 +38,14 @@ export default function Filter() {
   }
 
   return (
-    <div className="relative flex h-fit w-fit flex-col items-end gap-1 ">
+    <div
+      className={cn(
+        'relative flex h-fit w-fit flex-col items-end gap-1',
+        className,
+      )}
+    >
       <button
-        ref={ref}
+        ref={buttonRef}
         id="orderProductsBy"
         aria-haspopup="true"
         aria-expanded={isOpen}
@@ -62,7 +71,7 @@ export default function Filter() {
           return (
             <Option
               onSelected={() => {
-                setSearchParams('filter', filter.id)
+                setQuery('filter', filter.id)
                 closeFilter()
               }}
               selected={isSelected}

@@ -16,9 +16,9 @@ interface SectionData {
 }
 
 export default function Sections() {
-  const [getSearchParams, setSearchParams] = useQueryParam()
+  const { getQuery, setQuery } = useQueryParam()
   const ref = useRef<HTMLDivElement>(null)
-  const categoryParam = getSearchParams('category', 'all')
+  const categoryParam = getQuery('category', 'all')
 
   function syncSelector(category: string) {
     const item = document.getElementById(category)
@@ -48,7 +48,7 @@ export default function Sections() {
         return (
           <Section
             onSelected={() => {
-              setSearchParams('category', section.category)
+              setQuery('category', section.category)
             }}
             selected={isSelected}
             id={section.category}
