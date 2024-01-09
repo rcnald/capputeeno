@@ -11,22 +11,18 @@ interface PaginationProps extends ComponentProps<'nav'> {
   totalPages: number
 }
 
-interface NumbersProps {
-  selected: boolean
-  children: number | string
+interface PaginationLinkProps {
   href: string
+  isDisabled?: boolean
+  selected?: boolean
+  children?: React.ReactNode
+  direction?: 'left' | 'right'
 }
 
 type GeneratePaginationParams = {
   currentPage: number
   totalPages: number
   maxPagesToDisplay: number
-}
-
-interface ArrowProps {
-  direction: 'left' | 'right'
-  href: string
-  isDisabled: boolean
 }
 
 const FIRST_PAGES_COUNT = 5
@@ -49,21 +45,21 @@ export default function Pagination({ className, totalPages }: PaginationProps) {
       <ul className="flex gap-1">
         {allPages.map((page, i) => {
           return (
-            <Numbers
+            <PaginationLink
               href={createQuery('page', page)}
               selected={currentPage === page}
               key={i}
             >
               {page}
-            </Numbers>
+            </PaginationLink>
           )
         })}
-        <Arrow
+        <PaginationLink
           href={createQuery('page', currentPage - 1)}
           isDisabled={currentPage <= 1}
           direction="left"
         />
-        <Arrow
+        <PaginationLink
           href={createQuery('page', currentPage + 1)}
           isDisabled={currentPage >= totalPages}
           direction="right"
@@ -73,40 +69,37 @@ export default function Pagination({ className, totalPages }: PaginationProps) {
   )
 }
 
-function Numbers({ selected, children, href }: NumbersProps) {
-  return (
-    <li className="flex">
-      <Link
-        href={href}
-        className={cn(
-          'grid aspect-square w-[40px] place-content-center rounded-lg bg-zinc-300 p-2 text-zinc-400',
-          {
-            'bg-orange-500 text-zinc-300': selected,
-            'pointer-events-none': typeof children === 'string',
-          },
-        )}
-      >
-        {children}
-      </Link>
-    </li>
-  )
-}
+function PaginationLink({
+  href,
+  isDisabled,
+  selected,
+  children,
+  direction,
+}: PaginationLinkProps) {
+  const isArrow = direction === 'left' || direction === 'right'
 
-function Arrow({ direction, href, isDisabled }: ArrowProps) {
   return (
     <li>
       <Link
         href={href}
         className={cn(
-          'grid aspect-square w-[40px] place-content-center rounded-lg bg-zinc-300 p-2',
-          { 'pointer-events-none': isDisabled },
+          'group grid aspect-square w-[40px] place-content-center rounded-lg bg-zinc-300 p-2 transition-all hover:bg-zinc-400',
+          {
+            'hover:brightness-105': !isArrow,
+            'pointer-events-none': isDisabled,
+            'bg-orange-500 text-zinc-300': selected && !isArrow,
+          },
         )}
       >
-        <FaChevronLeft
-          className={cn('text-xs text-zinc-400', {
-            'rotate-180': direction === 'right',
-          })}
-        />
+        {isArrow ? (
+          <FaChevronLeft
+            className={cn('text-xs text-zinc-400 group-hover:text-zinc-200', {
+              'rotate-180': direction === 'right',
+            })}
+          />
+        ) : (
+          children
+        )}
       </Link>
     </li>
   )
