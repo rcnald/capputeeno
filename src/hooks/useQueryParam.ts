@@ -17,7 +17,7 @@ const useQueryParam: useQueryParamParams = () => {
 
   const setQuery: setQueryParams = (query, value) => {
     const params = new URLSearchParams(searchParams)
-    query ? params.set(query, value) : params.delete(query)
+    value ? params.set(query, value) : params.delete(query)
     replace(`${pathname}?${params.toString()}`)
   }
 
@@ -29,7 +29,7 @@ const useQueryParam: useQueryParamParams = () => {
     let value = ''
     if (typeof _value === 'number') value = _value.toString()
     const params = new URLSearchParams(searchParams)
-    query ? params.set(query, value) : params.delete(query)
+    value ? params.set(query, value) : params.delete(query)
     return `${pathname}?${params.toString()}`
   }
 
