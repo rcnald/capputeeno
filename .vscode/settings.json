@@ -6,5 +6,10 @@
   },
   "editor.quickSuggestions": {
     "strings": "on"
-  }
+  },
+  "editor.fontSize": 14,
+  "editor.fontFamily": "Victor Mono",
+  "editor.cursorStyle": "line",
+  "editor.accessibilityPageSize": 10,
+  "editor.accessibilitySupport": "off"
 }

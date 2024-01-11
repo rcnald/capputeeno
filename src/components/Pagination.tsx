@@ -1,6 +1,8 @@
 'use client'
 
 import useQueryParam from '@/hooks/useQueryParam'
+import { data } from '@/lib/data'
+import { filterProductsByCategory } from '@/lib/utils'
 import cn from '@/utils/cn'
 import Link from 'next/link'
 import { ComponentProps } from 'react'
@@ -8,7 +10,6 @@ import { FaChevronLeft } from 'react-icons/fa'
 
 interface PaginationProps extends ComponentProps<'nav'> {
   className?: string
-  totalPages: number
 }
 
 interface PaginationLinkProps {
@@ -19,20 +20,26 @@ interface PaginationLinkProps {
   direction?: 'left' | 'right'
 }
 
+type GetTotalPagesParams = (filter: string) => number
+
 type GeneratePaginationParams = {
   currentPage: number
   totalPages: number
   maxPagesToDisplay: number
 }
 
+const ITEMS_PER_PAGE = 12
 const FIRST_PAGES_COUNT = 5
 const LAST_PAGES_COUNT = 3
 
-export default function Pagination({ className, totalPages }: PaginationProps) {
-  const { getQuery, createQuery } = useQueryParam()
-  const pageQueryParam = getQuery('page', '1')
-  const parsedPage = Number(pageQueryParam)
-  const currentPage = parsedPage > totalPages ? 1 : parsedPage
+export default function Pagination({ className }: PaginationProps) {
+  const { getQuery, createQuery, setQuery } = useQueryParam()
+  let currentPage = Number(getQuery('page', '1'))
+  const totalPages = getTotalPages(getQuery('category', 'all'))
+  if (currentPage > totalPages) {
+    setQuery('page', '1')
+    currentPage = Number(getQuery('page', '1'))
+  }
 
   const allPages = generatePagination({
     currentPage,
@@ -143,4 +150,10 @@ const generatePagination = ({
     '...',
     totalPages,
   ]
+}
+
+const getTotalPages: GetTotalPagesParams = (filter) => {
+  return Math.ceil(
+    filterProductsByCategory(filter, data).length / ITEMS_PER_PAGE,
+  )
 }
