@@ -12,7 +12,7 @@ export default function Page({ params }: { params: { id: string } }) {
     notFound()
   }
   return (
-    <div className="grid min-h-[calc(100vh-60px)] place-content-center bg-zinc-200 p-7">
+    <div className="grid place-content-center bg-zinc-200 p-7">
       <div className="flex max-w-[1110px] gap-8">
         <Image src={product.image_url} width={640} height={580} alt="" />
         <div className="flex flex-col justify-between gap-3">
@@ -25,7 +25,7 @@ export default function Page({ params }: { params: { id: string } }) {
               }
             </span>
             <h1 className="text-4xl">{product.name}</h1>
-            <span className="text-xl text-black">R$ 40,00</span>
+            <span className="text-xl text-black">{product.price_in_cents}</span>
             <span className="text-xs">
               *Frete de R$40,00 para todo o Brasil. Grátis para compras acima de
               R$900,00.

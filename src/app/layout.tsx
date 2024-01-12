@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={saira.className}>
+      <body className={(saira.className, ' bg-zinc-200')}>
         <header className="flex justify-between gap-6 bg-white px-7">
           <span
             className={`${sairaStencilOne.className} text-4.25xl text-zinc-700`}
@@ -31,7 +31,7 @@ export default function RootLayout({
             <Cart />
           </div>
         </header>
-        {children}
+        <div className="h-layout-screen">{children}</div>
       </body>
     </html>
   )
