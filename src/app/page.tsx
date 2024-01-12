@@ -7,14 +7,16 @@ import Sections from '@/components/Sections'
 
 export default function Page() {
   return (
-    <div className="min-h-screen bg-zinc-200 p-7">
-      <div className="grid grid-cols-2 justify-between gap-y-4">
-        <Sections />
-        <Filter className="place-self-end" />
-        <Pagination className="col-start-2 place-self-end" />
+    <div className="min-h-[calc(100vh-60px)] bg-zinc-200 p-7">
+      <div className="flex flex-col justify-between">
+        <div className="grid grid-cols-2 justify-between gap-y-4">
+          <Sections />
+          <Filter className="place-self-end" />
+          <Pagination className="col-start-2 place-self-end" />
+        </div>
+        <Products></Products>
+        <Pagination className="ml-auto w-fit" />
       </div>
-      <Products></Products>
-      <Pagination className="ml-auto w-fit" />
     </div>
   )
 }

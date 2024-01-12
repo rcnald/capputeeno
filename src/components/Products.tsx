@@ -9,20 +9,16 @@ interface ProductProps {
   imageUrl: string
 }
 
-// interface ProductsProps {
-//   category: string
-//   filter: string
-//   page: string
-// }
-
 export default function Products() {
   const { getQuery } = useQueryParam()
-  const page = getQuery('page', '1')
-  const category = getQuery('category', 'all')
-  const filter = getQuery('filter', 'news')
-  const products = fakeFetchProducts(category, page, filter)
+  const products = fakeFetchProducts({
+    category: getQuery('category', 'all'),
+    page: getQuery('page', '1'),
+    filter: getQuery('filter', 'news'),
+    query: getQuery('query', ''),
+  })
   return (
-    <div className="flex flex-wrap gap-8 py-20">
+    <div className="flex flex-1 flex-wrap gap-8 py-10">
       {products.map((product) => {
         return (
           <Product

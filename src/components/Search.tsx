@@ -9,7 +9,8 @@ interface SearchProps {
 }
 
 export default function Search({ placeholder }: SearchProps) {
-  const { setQuery } = useQueryParam()
+  const { setQuery, getQuery } = useQueryParam()
+  const currentQuery = getQuery('query', '')
   const handleChange = useDebouncedCallback((query: string) => {
     setQuery('query', query)
   }, 300)
@@ -21,6 +22,7 @@ export default function Search({ placeholder }: SearchProps) {
       </label>
       <input
         type="text"
+        defaultValue={currentQuery}
         onChange={(e) => handleChange(e.target.value)}
         placeholder={placeholder}
         className=" w-full rounded-lg bg-zinc-200 px-4 py-2 pr-10 text-sm text-zinc-700 outline-0 ring-2 ring-transparent transition-all placeholder:text-zinc-400 focus:ring-zinc-700"

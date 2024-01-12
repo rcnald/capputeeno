@@ -2,14 +2,14 @@ import { ProductResponse, ProductsResponse, data } from '@/lib/data'
 import { ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+interface Filters {
+  category: string
+  filter: string
+  page: string
+  query: string
 }
-type fakeFetchProductsParams = (
-  category: string,
-  page: string,
-  filter: string,
-) => ProductsResponse
+
+type fakeFetchProductsParams = (filters: Filters) => ProductsResponse
 
 type FilterProduct = (
   filterParam: string,
@@ -25,20 +25,29 @@ type FilterProductData = (data: ProductsResponse) => ProductsResponse
 
 type OrderProduct = (page: string, data: ProductsResponse) => ProductsResponse
 
-const ITEMS_PER_PAGE = 12
+type GetTotalPagesParams = (query: string, category: string) => number
 
-export const fakeFetchProducts: fakeFetchProductsParams = (
+type GeneratePaginationParams = {
+  currentPage: number
+  totalPages: number
+  maxPagesToDisplay: number
+}
+
+export const fakeFetchProducts: fakeFetchProductsParams = ({
   category,
   page,
   filter,
-) => {
-  const dataFilteredByCategory = filterProductsByCategory(category, data)
-  const dataFilterByFilter = filterProductByFilter(
-    filter,
-    dataFilteredByCategory,
+  query,
+}) => {
+  const filteredData = filterProductsByQuery(
+    query,
+    filterProductsByCategory(category, data),
   )
 
-  return filterProductsPerPage(page, dataFilterByFilter)
+  return filterProductsPerPage(
+    page,
+    filterProductByFilter(filter, filteredData),
+  )
 }
 
 export const filterProductsByCategory: FilterProduct = (category, data) => {
@@ -51,12 +60,19 @@ export const filterProductsByCategory: FilterProduct = (category, data) => {
   })
 }
 
-export const filterProductByFilter: FilterProduct = (filter, data) => {
+export const filterProductsByQuery: FilterProduct = (query, data) => {
+  return query === ''
+    ? data
+    : data.filter((product) =>
+        product.name.toLowerCase().includes(query.toLowerCase()),
+      )
+}
+
+const filterProductByFilter: FilterProduct = (filter, data) => {
   switch (filter) {
     case 'price-to-low':
-      return filterProductByPrice('price-to-low', data)
     case 'price-to-high':
-      return filterProductByPrice('price-to-high', data)
+      return filterProductByPrice(filter, data)
     case 'news':
       return filterProductByNewest(data)
     case 'popular':
@@ -99,18 +115,69 @@ const filterProductByPrice: FilterProduct = (filter, data) => {
         return 0
     }
   }
-  return data.sort(comparePrices).map((product) => product)
+
+  return data.sort(comparePrices)
 }
 
-export const filterProductsPerPage: OrderProduct = (page, data) => {
-  const offset = (Number(page) - 1) * ITEMS_PER_PAGE
-  let count = 0
-  return data.filter((product, i) => {
-    if (i >= offset && count < ITEMS_PER_PAGE) {
-      count++
-      return product
-    } else {
-      return null
-    }
-  })
+const filterProductsPerPage: OrderProduct = (page, data) => {
+  const offset =
+    (Number(page) - 1) * Number(process.env.NEXT_PUBLIC_ITEMS_PER_PAGE)
+  const startIndex = Math.max(offset, 0)
+  const endIndex = startIndex + Number(process.env.NEXT_PUBLIC_ITEMS_PER_PAGE)
+
+  return data.slice(startIndex, endIndex)
+}
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+export const generatePagination = ({
+  currentPage,
+  totalPages,
+  maxPagesToDisplay,
+}: GeneratePaginationParams) => {
+  const canAllPagesBeDisplayed = totalPages <= maxPagesToDisplay
+  const isCurrentPageInFirstPages =
+    currentPage <= Number(process.env.NEXT_PUBLIC_FIRST_PAGES_COUNT)
+  const isCurrentPageInLastPages =
+    currentPage >= totalPages - Number(process.env.NEXT_PUBLIC_LAST_PAGES_COUNT)
+
+  if (canAllPagesBeDisplayed) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1)
+  }
+  if (isCurrentPageInFirstPages) {
+    return [1, 2, 3, 4, 5, 6, '...', totalPages]
+  }
+
+  if (isCurrentPageInLastPages) {
+    return [
+      1,
+      2,
+      '...',
+      totalPages - 4,
+      totalPages - 3,
+      totalPages - 2,
+      totalPages - 1,
+      totalPages,
+    ]
+  }
+  return [
+    1,
+    2,
+    '...',
+    currentPage - 1,
+    currentPage,
+    currentPage + 1,
+    '...',
+    totalPages,
+  ]
+}
+
+export const getTotalPages: GetTotalPagesParams = (query, category) => {
+  const byQuery = filterProductsByQuery(query, data)
+  return Math.ceil(
+    filterProductsByCategory(category, byQuery).length /
+      Number(process.env.NEXT_PUBLIC_ITEMS_PER_PAGE),
+  )
 }

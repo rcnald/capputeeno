@@ -1,9 +1,7 @@
 'use client'
 
 import useQueryParam from '@/hooks/useQueryParam'
-import { data } from '@/lib/data'
-import { filterProductsByCategory } from '@/lib/utils'
-import cn from '@/utils/cn'
+import { cn, generatePagination, getTotalPages } from '@/lib/utils'
 import Link from 'next/link'
 import { ComponentProps } from 'react'
 import { FaChevronLeft } from 'react-icons/fa'
@@ -20,22 +18,14 @@ interface PaginationLinkProps {
   direction?: 'left' | 'right'
 }
 
-type GetTotalPagesParams = (filter: string) => number
-
-type GeneratePaginationParams = {
-  currentPage: number
-  totalPages: number
-  maxPagesToDisplay: number
-}
-
-const ITEMS_PER_PAGE = 12
-const FIRST_PAGES_COUNT = 5
-const LAST_PAGES_COUNT = 3
-
 export default function Pagination({ className }: PaginationProps) {
   const { getQuery, createQuery, setQuery } = useQueryParam()
   let currentPage = Number(getQuery('page', '1'))
-  const totalPages = getTotalPages(getQuery('category', 'all'))
+
+  const totalPages = getTotalPages(
+    getQuery('query', ''),
+    getQuery('category', 'all'),
+  )
   if (currentPage > totalPages) {
     setQuery('page', '1')
     currentPage = Number(getQuery('page', '1'))
@@ -109,51 +99,5 @@ function PaginationLink({
         )}
       </Link>
     </li>
-  )
-}
-
-const generatePagination = ({
-  currentPage,
-  totalPages,
-  maxPagesToDisplay,
-}: GeneratePaginationParams) => {
-  const canAllPagesBeDisplayed = totalPages <= maxPagesToDisplay
-  const isCurrentPageInFirstPages = currentPage <= FIRST_PAGES_COUNT
-  const isCurrentPageInLastPages = currentPage >= totalPages - LAST_PAGES_COUNT
-
-  if (canAllPagesBeDisplayed) {
-    return Array.from({ length: totalPages }, (_, i) => i + 1)
-  }
-  if (isCurrentPageInFirstPages) {
-    return [1, 2, 3, 4, 5, 6, '...', totalPages]
-  }
-
-  if (isCurrentPageInLastPages) {
-    return [
-      1,
-      2,
-      '...',
-      totalPages - 4,
-      totalPages - 3,
-      totalPages - 2,
-      totalPages - 1,
-      totalPages,
-    ]
-  }
-  return [
-    1,
-    2,
-    '...',
-    currentPage - 1,
-    currentPage,
-    currentPage + 1,
-    '...',
-    totalPages,
-  ]
-}
-
-const getTotalPages: GetTotalPagesParams = (filter) => {
-  return Math.ceil(
-    filterProductsByCategory(filter, data).length / ITEMS_PER_PAGE,
   )
 }
