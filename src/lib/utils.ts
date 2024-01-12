@@ -33,6 +33,13 @@ type GeneratePaginationParams = {
   maxPagesToDisplay: number
 }
 
+export const fakeFetchProduct = (id: string | undefined | string[]) => {
+  if (!id) {
+    return null
+  }
+  return data.find((product) => product.id === id)
+}
+
 export const fakeFetchProducts: fakeFetchProductsParams = ({
   category,
   page,

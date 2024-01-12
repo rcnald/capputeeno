@@ -1,6 +1,7 @@
 'use client'
 
 import useQueryParam from '@/hooks/useQueryParam'
+import { sections } from '@/lib/data'
 
 import { ComponentProps, useLayoutEffect, useRef } from 'react'
 
@@ -8,11 +9,6 @@ interface SectionProps extends ComponentProps<'li'> {
   children: string
   selected?: boolean
   onSelected: () => void
-}
-
-interface SectionData {
-  category: string
-  name: string
 }
 
 export default function Sections() {
@@ -79,9 +75,3 @@ function Section({ children, selected, onSelected, ...props }: SectionProps) {
     </li>
   )
 }
-
-const sections: Array<SectionData> = [
-  { category: 'all', name: 'todos os produtos' },
-  { category: 't-shirts', name: 'camisetas' },
-  { category: 'mugs', name: 'canecas' },
-]

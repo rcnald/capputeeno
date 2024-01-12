@@ -9,7 +9,18 @@ export interface ProductResponse {
   created_at: string
 }
 
+interface SectionData {
+  category: string
+  name: string
+}
+
 export type ProductsResponse = Array<ProductResponse>
+
+export const sections: Array<SectionData> = [
+  { category: 'all', name: 'todos os produtos' },
+  { category: 't-shirts', name: 'camisetas' },
+  { category: 'mugs', name: 'canecas' },
+]
 
 export const data: ProductsResponse = [
   {

@@ -11,7 +11,7 @@ export function Bag({ size, className }: IconProps) {
       className={className}
     >
       <path
-        stroke="#737380"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"
@@ -19,7 +19,7 @@ export function Bag({ size, className }: IconProps) {
         className={className}
       />
       <path
-        stroke="#737380"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"
@@ -28,7 +28,7 @@ export function Bag({ size, className }: IconProps) {
         className={className}
       />
       <path
-        stroke="#737380"
+        stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.5"

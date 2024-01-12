@@ -1,12 +1,14 @@
 import useQueryParam from '@/hooks/useQueryParam'
 import { fakeFetchProducts } from '@/lib/utils'
 import Image from 'next/image'
+import Link from 'next/link'
 
 interface ProductProps {
   type: string
   name: string
   price: number
   imageUrl: string
+  id: string
 }
 
 export default function Products() {
@@ -18,7 +20,7 @@ export default function Products() {
     query: getQuery('query', ''),
   })
   return (
-    <div className="flex flex-1 flex-wrap gap-8 py-10">
+    <ul className="flex flex-1 flex-wrap gap-8 py-10">
       {products.map((product) => {
         return (
           <Product
@@ -26,28 +28,31 @@ export default function Products() {
             name={product.name}
             price={product.price_in_cents}
             imageUrl={product.image_url}
+            id={product.id}
             key={product.id}
           />
         )
       })}
-    </div>
+    </ul>
   )
 }
 
-function Product({ type, name, price, imageUrl }: ProductProps) {
+function Product({ type, name, price, imageUrl, id }: ProductProps) {
   return (
-    <article data-type={type} className="w-fit rounded-t-lg">
-      <Image
-        src={imageUrl}
-        width={256}
-        height={300}
-        alt="Picture of the author"
-      ></Image>
-      <div className="flex flex-col gap-2 bg-white px-3 py-2">
-        <h1 className="capitalize text-zinc-400">{name}</h1>
-        <hr />
-        <span className="font-semibold text-black">R$ {price}</span>
-      </div>
-    </article>
+    <li data-type={type} className="w-fit rounded-t-lg">
+      <Link href={`/product/${id}`}>
+        <Image
+          src={imageUrl}
+          width={256}
+          height={300}
+          alt="Picture of the author"
+        ></Image>
+        <div className="flex flex-col gap-2 bg-white px-3 py-2">
+          <h1 className="capitalize text-zinc-400">{name}</h1>
+          <hr />
+          <span className="font-semibold text-black">R$ {price}</span>
+        </div>
+      </Link>
+    </li>
   )
 }
