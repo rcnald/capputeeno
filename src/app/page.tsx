@@ -9,7 +9,7 @@ import { Suspense } from 'react'
 
 export default function Page() {
   return (
-    <div className="flex flex-col gap-6 bg-zinc-200 p-7">
+    <main className="flex flex-col gap-6 bg-zinc-200 p-7">
       <div className="flex justify-between">
         <Sections />
         <Filter />
@@ -21,6 +21,6 @@ export default function Page() {
         </Suspense>
         <Pagination className="self-end" />
       </div>
-    </div>
+    </main>
   )
 }
