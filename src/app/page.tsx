@@ -4,6 +4,8 @@ import Filter from '@/components/Filter'
 import Pagination from '@/components/Pagination'
 import Products from '@/components/Products'
 import Sections from '@/components/Sections'
+import { ProductsSkeleton } from '@/skeletons'
+import { Suspense } from 'react'
 
 export default function Page() {
   return (
@@ -14,7 +16,9 @@ export default function Page() {
       </div>
       <div className="flex flex-col">
         <Pagination className="self-end" />
-        <Products />
+        <Suspense fallback={<ProductsSkeleton />}>
+          <Products />
+        </Suspense>
         <Pagination className="self-end" />
       </div>
     </div>

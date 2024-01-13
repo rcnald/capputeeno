@@ -25,10 +25,19 @@ const config: Config = {
           '0%': { transform: 'scale(1)', opacity: '1' },
           '100%': { transform: 'scale(.95)', opacity: '0' },
         },
+        shimmer: {
+          '100%': {
+            transform: 'translateX(100%)',
+          },
+        },
       },
       animation: {
         fadeIn: 'fadeIn .1s ease-in forwards',
         fadeOut: 'fadeOut .1s ease-out forwards',
+        shimmer: 'shimmer 2s infinite',
+      },
+      height: {
+        'layout-screen': 'calc(100vh - 60px)',
       },
     },
   },

@@ -1,7 +1,9 @@
 import useQueryParam from '@/hooks/useQueryParam'
 import { cn, fakeFetchProducts } from '@/lib/utils'
+import { ProductSkeleton } from '@/skeletons'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Suspense } from 'react'
 
 interface ProductProps {
   type: string
@@ -23,14 +25,16 @@ export default function Products({ className }: { className?: string }) {
     <ul className={cn('flex flex-wrap gap-8 py-10', className)}>
       {products.map((product) => {
         return (
-          <Product
-            type={product.category}
-            name={product.name}
-            price={product.price_in_cents}
-            imageUrl={product.image_url}
-            id={product.id}
-            key={product.id}
-          />
+          <Suspense key={product.id} fallback={<ProductSkeleton />}>
+            <Product
+              type={product.category}
+              name={product.name}
+              price={product.price_in_cents}
+              imageUrl={product.image_url}
+              id={product.id}
+              key={product.id}
+            />
+          </Suspense>
         )
       })}
     </ul>
