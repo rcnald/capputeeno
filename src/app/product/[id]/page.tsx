@@ -1,5 +1,6 @@
 'use client'
 
+import Return from '@/components/Return'
 import { sections } from '@/lib/data'
 import { fakeFetchProduct } from '@/lib/utils'
 import { Icons } from '@/utils/Icons'
@@ -12,9 +13,10 @@ export default function Page({ params }: { params: { id: string } }) {
     notFound()
   }
   return (
-    <main className="grid h-full place-content-center bg-zinc-200 p-7">
+    <main className="grid h-full place-content-center gap-5 bg-zinc-200 p-7">
+      <Return />
       <section className="flex max-w-[1110px] gap-8">
-        <Image src={product.image_url} width={640} height={580} alt="" />
+        <Image src={product.image_url} width={640} height={580} alt="product" />
         <div className="flex flex-col justify-between gap-3">
           <div className=" flex flex-col gap-3 text-zinc-700">
             <span className="text-base capitalize">

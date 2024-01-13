@@ -31,7 +31,9 @@ export default function RootLayout({
             <Cart />
           </div>
         </header>
-        <div className="h-layout-screen">{children}</div>
+        <div className="grid h-layout-screen items-center justify-center gap-5 bg-zinc-200 p-7">
+          {children}
+        </div>
       </body>
     </html>
   )

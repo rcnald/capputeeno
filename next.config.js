@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
-
-module.exports = {
+const nextConfig = {
+  experimental: {
+    appDir: true,
+    fontLoaders: [
+      { loader: '@next/font/google', options: { subsets: ['latin'] } },
+    ],
+  },
   images: {
     domains: ['storage.googleapis.com'],
     remotePatterns: [
@@ -20,3 +24,5 @@ module.exports = {
     ],
   },
 }
+
+module.exports = nextConfig
