@@ -1,13 +1,31 @@
 'use client'
 
 import Return from '@/components/Return'
+import { useLocalStorage } from '@/hooks/useLocalStorage'
 import { sections } from '@/lib/data'
-import { fakeFetchProduct } from '@/lib/utils'
+import { Cart, fakeFetchProduct } from '@/lib/utils'
 import { Icons } from '@/utils/Icons'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
 export default function Page({ params }: { params: { id: string } }) {
+  const [value, setCart] = useLocalStorage<Cart>('cart', [])
+
+  const handleClick = (id: string) => {
+    const cart = value
+    let updatedCart
+    const existingItem = cart.find((item) => item.id === id)
+
+    if (existingItem) {
+      updatedCart = cart.map((item) =>
+        item.id === id ? { ...item, amount: item.amount + 1 } : item,
+      )
+    } else {
+      updatedCart = [...cart, { id, amount: 1 }]
+    }
+    setCart(updatedCart)
+  }
+
   const product = fakeFetchProduct(params.id)
   if (!product) {
     notFound()
@@ -39,7 +57,10 @@ export default function Page({ params }: { params: { id: string } }) {
               <p className="text-sm">{product.description}</p>
             </div>
           </div>
-          <button className=" flex justify-center gap-4 rounded bg-cyan-800 py-2 text-white">
+          <button
+            onClick={() => handleClick(product.id)}
+            className=" flex justify-center gap-4 rounded bg-cyan-800 py-2 text-white"
+          >
             <Icons.Bag size="24" />
             Adicionar ao carrinho
           </button>

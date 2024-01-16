@@ -2,6 +2,7 @@ import { Bag } from './Icons/Bag'
 import { Chevron } from './Icons/Chevron'
 import { Magnifying } from './Icons/Magnifying'
 import { Return } from './Icons/Return'
+import { Trash } from './Icons/Trash'
 
 export type IconProps = {
   size: string
@@ -17,4 +18,5 @@ export const Icons: IconType = {
   Bag,
   Chevron,
   Return,
+  Trash,
 }

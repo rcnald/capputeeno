@@ -9,6 +9,13 @@ interface Filters {
   query: string
 }
 
+export interface CartItem {
+  id: string
+  amount: number
+}
+
+export type Cart = Array<CartItem>
+
 type fakeFetchProductsParams = (filters: Filters) => ProductsResponse
 
 type FilterProduct = (
@@ -33,10 +40,7 @@ type GeneratePaginationParams = {
   maxPagesToDisplay: number
 }
 
-export const fakeFetchProduct = (id: string | undefined | string[]) => {
-  if (!id) {
-    return null
-  }
+export const fakeFetchProduct = (id: string) => {
   return data.find((product) => product.id === id)
 }
 

@@ -2,13 +2,35 @@
 
 import Return from '@/components/Return'
 import Select from '@/components/Select'
-import { cn } from '@/lib/utils'
+import { useLocalStorage } from '@/hooks/useLocalStorage'
+import { Cart, cn, fakeFetchProduct } from '@/lib/utils'
+import { Icons } from '@/utils/Icons'
 import { Saira } from 'next/font/google'
 import Image from 'next/image'
+import { useState } from 'react'
 
 const saira = Saira({ subsets: ['latin'], weight: '400' })
 
 export default function Page() {
+  const [value, setValue] = useLocalStorage<Cart>('cart', [])
+  const [cart, setCart] = useState(value)
+
+  const totalPrice = cart.reduce((acc, item) => {
+    const priceExists = fakeFetchProduct(item.id)?.price_in_cents
+    if (priceExists) {
+      return acc + priceExists * item.amount
+    }
+    return acc
+  }, 0)
+
+  function handleClick(id: string) {
+    const newCart = cart.filter((item) => {
+      return item.id !== id
+    })
+    setCart(newCart)
+    setValue(newCart)
+  }
+
   return (
     <div
       className={cn(
@@ -24,13 +46,27 @@ export default function Page() {
               Seu carrinho
             </h1>
             <span>
-              Total (3 produtos) <strong>R$161,00</strong>
+              Total ({cart.length} produtos) <strong>R$ {totalPrice}</strong>
             </span>
           </div>
           <ul className="flex flex-col gap-5">
-            <Product />
-            <Product />
-            <Product />
+            {cart.map((item) => {
+              const product = fakeFetchProduct(item.id)
+              if (product) {
+                return (
+                  <Product
+                    key={item.id}
+                    amount={item.amount}
+                    image={product.image_url}
+                    description={product.description}
+                    name={product.name}
+                    price={product.price_in_cents}
+                    onClick={() => handleClick(product.id)}
+                  />
+                )
+              }
+              return null
+            })}
           </ul>
         </section>
         <section className="flex h-full max-h-[600px] w-full max-w-sm flex-col justify-between bg-white p-6">
@@ -38,12 +74,12 @@ export default function Page() {
             <h1 className="font-saira text-xl font-semibold text-zinc-700">
               Resumo do pedido
             </h1>
-            <Prices name="Subtotal de produtos" value="161,00" />
-            <Prices name="Entrega" value="161,00" />
+            <Prices name="Subtotal de produtos" value={totalPrice.toString()} />
+            <Prices name="Entrega" value="40,00" />
             <hr />
             <Prices
               name="Total"
-              value="40,00"
+              value={(totalPrice + 40).toString()}
               className="font-bold text-black"
             />
             <button className="rounded-md bg-green-700 py-3 text-white">
@@ -80,13 +116,25 @@ function Prices({ name, value, className }: { [P in string]: string }) {
   )
 }
 
-function Product() {
+function Product({
+  image,
+  name,
+  description,
+  price,
+  amount,
+  onClick,
+}: {
+  image: string
+  name: string
+  description: string
+  price: number
+  amount: number
+  onClick: () => void
+}) {
   return (
     <li className="relative flex rounded-xl bg-white">
       <Image
-        src={
-          'https://storage.googleapis.com/xesque-dev/challenge-images/camiseta-04.jpg'
-        }
+        src={image}
         width={256}
         height={211}
         alt="dada"
@@ -94,16 +142,17 @@ function Product() {
       />
       <div className="flex flex-col justify-between px-8 py-4 text-zinc-600">
         <div className="flex flex-col gap-3">
-          <h2 className="text-xl font-light ">Caneca de cerâmica rústica</h2>
-          <p className="text-xs">
-            Aqui vem um texto descritivo do produto, esta caixa de texto servirá
-            apenas de exemplo para que simule algum texto que venha a ser
-            inserido nesse campo, descrevendo tal produto.
-          </p>
+          <header className="flex justify-between">
+            <h2 className="text-xl font-light ">{name}</h2>
+            <button onClick={onClick}>
+              <Icons.Trash size="24" className="text-red-600"></Icons.Trash>
+            </button>
+          </header>
+          <p className="text-xs">{description}</p>
         </div>
         <div className="flex items-center justify-between">
-          <Select defaultValue={1} />
-          <span className="font-bold text-black">R$3232</span>
+          <Select defaultValue={amount} />
+          <span className="font-bold text-black">R$ {price}</span>
         </div>
       </div>
     </li>
